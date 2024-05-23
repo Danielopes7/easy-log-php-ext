@@ -6,26 +6,30 @@
   "engines": {
     "vscode": "^1.89.0"
   },
-  "categories": [
-    "Other"
+  "activationEvents": [
+      "onCommand:extension.addPhpLog"
   ],
-  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
-    "commands": [
-      {
-        "command": "easy-log-php.helloWorld",
-        "title": "Hello World"
-      }
-    ]
+      "commands": [
+          {
+              "command": "extension.addPhpLog",
+              "title": "Adicionar Log PHP"
+          }
+      ],
+      "keybindings": [
+          {
+              "command": "extension.addPhpLog",
+              "key": "ctrl+alt+l",
+              "when": "editorTextFocus && editorLangId == php"
+          }
+      ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
-    "test": "vscode-test"
+      "postinstall": "node ./node_modules/vscode/bin/install"
   },
   "devDependencies": {
     "@types/vscode": "^1.89.0",

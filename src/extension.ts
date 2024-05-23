@@ -1,26 +1,32 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+    let disposable = vscode.commands.registerCommand('extension.addPhpLog', () => {
+        const editor = vscode.window.activeTextEditor;
+        if (editor) {
+            const document = editor.document;
+            const selection = editor.selection;
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "easy-log-php" is now active!');
+            const selectedText = document.getText(selection);
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('easy-log-php.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Easy Log PHP!');
-	});
+            // Regular expression to match a PHP variable name
+            const variableMatch = selectedText.match(/^\$[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$/);
 
-	context.subscriptions.push(disposable);
+            if (variableMatch) {
+                let variableName = variableMatch[0];
+				variableName = variableName.substring(1);
+                const logText = `\ndd(${selectedText});`;
+
+                editor.edit(editBuilder => {
+                    editBuilder.insert(new vscode.Position(selection.end.line + 1, 0), logText + '\n');
+                });
+            } else {
+                vscode.window.showInformationMessage('Select a valid PHP variable to generate the log.');
+            }
+        }
+    });
+
+    context.subscriptions.push(disposable);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
